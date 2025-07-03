@@ -1,0 +1,145 @@
+{
+  "name": "twitter_auto_send",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "Node (create twitter) can only use OAuth2.0, OAuth 2.0 can only send text, not support images."
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1180,
+        -760
+      ],
+      "typeVersion": 1,
+      "id": "56bfc4dc-1c73-4c36-88e3-024e644d88c0",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png",
+        "responseFormat": "file",
+        "dataPropertyName": "media",
+        "options": {}
+      },
+      "id": "f46f3e6c-329b-4a9c-896e-83fac5407d92",
+      "name": "Download Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        -500
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth1",
+        "requestMethod": "POST",
+        "url": "https://upload.twitter.com/1.1/media/upload.json",
+        "jsonParameters": true,
+        "options": {
+          "bodyContentType": "raw"
+        },
+        "sendBinaryData": true,
+        "binaryPropertyName": "media"
+      },
+      "id": "4bfa9064-800d-48dc-a5a9-0eceac75d5dc",
+      "name": "Upload to Twitter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -500
+      ],
+      "credentials": {
+        "oAuth1Api": {
+          "id": "PtULUjZ7BURobunm",
+          "name": "X oauth1.0"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth1",
+        "requestMethod": "POST",
+        "url": "https://api.twitter.com/1.1/statuses/update.json",
+        "jsonParameters": true,
+        "options": {
+          "bodyContentType": "form-urlencoded"
+        },
+        "bodyParametersJson": "status=hello&media_ids={{ $json[\"media_id_string\"] }}"
+      },
+      "id": "803ebe8d-7e86-417a-94c8-3a235aed4c00",
+      "name": "Send Tweet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -500
+      ],
+      "credentials": {
+        "oAuth1Api": {
+          "id": "PtULUjZ7BURobunm",
+          "name": "X oauth1.0"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1060,
+        -520
+      ],
+      "id": "187fb7c7-6c4c-4167-909b-e6d46d2cc0e4",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Upload to Twitter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Twitter": {
+      "main": [
+        [
+          {
+            "node": "Send Tweet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "57e9c7eb-afbf-495a-bf56-85352d469cac",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "301f91fb886c1577d054fc4cef30d1b4450e772d334c43694951e008b7bf7e01"
+  },
+  "id": "lS2X3YLZr7Q2RSbE",
+  "tags": []
+}

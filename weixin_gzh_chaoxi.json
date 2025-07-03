@@ -1,5 +1,5 @@
 {
-  "name": "chaoxi",
+  "name": "weixin_gzh_chaoxi",
   "nodes": [
     {
       "parameters": {},
@@ -29,7 +29,7 @@
     },
     {
       "parameters": {
-        "url": "https://api.apiflash.com/v1/urltoimage?access_key=764977990c664fb79093cd206d43f292&wait_until=network_idle&url=https://ganhai.pages.dev/&fresh=true&width=1024&height=900",
+        "url": "https://api.apiflash.com/v1/urltoimage?access_key=?&wait_until=network_idle&url=https://ganhai.pages.dev/&fresh=true&width=1024&height=900",
         "responseFormat": "file",
         "options": {}
       },
@@ -44,7 +44,7 @@
     },
     {
       "parameters": {
-        "url": "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx727107e4c1d179da&secret=8a228f26e003e035cdf202351885194e",
+        "url": "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=?&secret=?",
         "options": {}
       },
       "id": "2f826ace-963b-413f-9186-353fb2d45e3e",
@@ -217,7 +217,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "46335a8f-48ba-4c2b-8b4a-c26e318b572f",
+  "versionId": "c9a9c6ce-dd86-4d2e-9664-b1d862d62274",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "301f91fb886c1577d054fc4cef30d1b4450e772d334c43694951e008b7bf7e01"
