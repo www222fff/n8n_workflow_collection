@@ -14,10 +14,10 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -816,
-        -144
+        -1184,
+        -96
       ],
-      "id": "2cc1c1c1-3e36-4d60-8561-860b3fd13d27",
+      "id": "67572171-9ba2-4df8-8b87-b0ffe5deacd8",
       "name": "Schedule Trigger"
     },
     {
@@ -27,13 +27,13 @@
           "splitIntoItems": true
         }
       },
-      "id": "b495ea3e-3959-44cb-904e-791de1ec4e55",
+      "id": "e3f725ee-cb9a-4967-a2d7-1f3a13d44d8d",
       "name": "Get latest utxo",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        -592,
-        64
+        -784,
+        32
       ]
     },
     {
@@ -43,64 +43,24 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        -368,
-        64
+        -560,
+        32
       ],
-      "id": "d58cc3af-0fb6-4b45-9480-ed86118df9cb",
+      "id": "6caf03f5-162d-460f-8c6e-07c48c1aafb4",
       "name": "Limit UTXO"
     },
     {
       "parameters": {
-        "text": "={{$json[\"text\"]}}",
-        "additionalFields": {}
+        "functionCode": "const inputArray = items[0].json.result;\nlet blockHeightLine = \"\";\nconst bhItem = inputArray.find(obj => obj.blockHeight);\nif (bhItem) {\n  blockHeightLine = `Big 5 UTXO on blockHeight: ${bhItem.blockHeight}`;\n}\nconst addrItems = inputArray.filter(obj => !obj.blockHeight);\nconst texts = addrItems.slice(5, 10).map(obj => {\n  const key = Object.keys(obj)[0];\n  let address = key.includes(\"_\") ? key.split(\"_\")[1] : key;\n  const utxoRaw = obj[key];\n  let utxo = Math.floor(parseFloat(utxoRaw) || 0);\n  return `${address}: ${utxo}`;\n});\nfooter = `#BTC #Crypto`;\nlet tweet = [blockHeightLine, ...texts, footer].join(\"\\n\");\nif (tweet.length > 280) {\n  tweet = tweet.slice(0, 277) + \"...\";\n}\nreturn [{ json: { text: tweet } }];"
       },
-      "type": "n8n-nodes-base.twitter",
-      "typeVersion": 2,
-      "position": [
-        64,
-        -144
-      ],
-      "id": "0c87618a-f4cf-40ed-b966-249f4a06039f",
-      "name": "Create Tweet (Top Rank)",
-      "credentials": {
-        "twitterOAuth2Api": {
-          "id": "QdAkpuhCZiVLrFmj",
-          "name": "X account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "functionCode": "// 输入只有一个 item，数据在 items[0].json.result\nconst inputArray = items[0].json.result;\n\n// 1. 先找到 blockHeight\nlet blockHeightLine = \"\";\nconst bhItem = inputArray.find(obj => obj.blockHeight);\nif (bhItem) {\n  blockHeightLine = `Big 5 UTXO on blockHeight: ${bhItem.blockHeight}`;\n}\n\n// 2. 剩下的地址数据\nconst addrItems = inputArray.filter(obj => !obj.blockHeight);\n\n// 3. 取前 5 条，格式化\nconst texts = addrItems.slice(0, 5).map(obj => {\n  const key = Object.keys(obj)[0];\n  let address = key.includes(\"_\") ? key.split(\"_\")[1] : key;\n  const utxoRaw = obj[key];\n  let utxo = Math.floor(parseFloat(utxoRaw) || 0);\n  return `${address}: ${utxo}`;\n});\n\nfooter = `#BTC #Crypto`;\n\nlet tweet = [blockHeightLine, ...texts, footer].join(\"\\n\");\n\nif (tweet.length > 280) {\n  tweet = tweet.slice(0, 277) + \"...\";\n}\n\nreturn [{ json: { text: tweet } }];"
-      },
-      "id": "820a7675-4f94-4d65-93b0-7015f056e09d",
+      "id": "beedf800-64f9-43e4-8b53-daeccae30f4d",
       "name": "Format Latest UTXO",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
       "position": [
-        -160,
-        64
+        -352,
+        32
       ]
-    },
-    {
-      "parameters": {
-        "text": "={{$json[\"text\"]}}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.twitter",
-      "typeVersion": 2,
-      "position": [
-        304,
-        64
-      ],
-      "id": "c57f3b38-e439-4c65-95b2-8031f2285e84",
-      "name": "Create Tweet (Reply Latest UTXO)",
-      "credentials": {
-        "twitterOAuth2Api": {
-          "id": "QdAkpuhCZiVLrFmj",
-          "name": "X account"
-        }
-      }
     },
     {
       "parameters": {
@@ -109,23 +69,23 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        -368,
-        -144
+        -560,
+        -176
       ],
-      "id": "dad85020-f52b-4ef5-9b25-045bc05de97f",
+      "id": "99a319e8-d442-45fe-82e2-f557969bcc66",
       "name": "Limit Top"
     },
     {
       "parameters": {
-        "functionCode": "// 输入只有一个 item，数据在 items[0].json.result\nconst inputArray = items[0].json.result;\n\nheader = `Top 5 rank:`;\nfooter = `#BTC`;\n\nconst addrItems = inputArray.filter(obj => !obj.blockHeight);\n\nconst texts = addrItems.slice(0, 5).map(obj => {\n  const key = Object.keys(obj)[0];\n  let address = key.includes(\"_\") ? key.split(\"_\")[1] : key;\n  const utxoRaw = obj[key];\n  let utxo = Math.floor(parseFloat(utxoRaw) || 0);\n  return `${address}: ${utxo}`;\n});\n\nlet tweet = [header, ...texts, footer].join(\"\\n\");\n\nif (tweet.length > 280) {\n  tweet = tweet.slice(0, 277) + \"...\";\n}\n\nreturn [{ json: { text: tweet } }];"
+        "functionCode": "const inputArray = items[0].json.result;\nheader = `Top 5 rank:`;\nfooter = `#BTC`;\nconst addrItems = inputArray.filter(obj => !obj.blockHeight);\nconst texts = addrItems.slice(0, 5).map(obj => {\n  const key = Object.keys(obj)[0];\n  let address = key.includes(\"_\") ? key.split(\"_\")[1] : key;\n  const utxoRaw = obj[key];\n  let utxo = Math.floor(parseFloat(utxoRaw) || 0);\n  return `${address}: ${utxo}`;\n});\nlet tweet = [header, ...texts, footer].join(\"\\n\");\nif (tweet.length > 280) {\n  tweet = tweet.slice(0, 277) + \"...\";\n}\nreturn [{ json: { text: tweet } }];"
       },
-      "id": "0a2335dc-4942-4e8b-a74d-02f50fd1d8a1",
+      "id": "c90e2199-0298-4ff8-be8b-80808bd960fd",
       "name": "Format Top Rank",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
       "position": [
-        -160,
-        -144
+        -384,
+        -176
       ]
     },
     {
@@ -135,14 +95,84 @@
           "splitIntoItems": true
         }
       },
-      "id": "8fdc7eb4-4dc6-42b2-8dd9-72a7032e4db2",
+      "id": "4756d231-7f78-4caf-b5d7-10c8d96fc1fc",
       "name": "Get top balance",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        -592,
-        -144
+        -784,
+        -176
       ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        48,
+        -16
+      ],
+      "id": "81cb277c-228c-4351-9027-5b939d66a98c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      text: $items[1].json.text,           // 第二条 text (Latest UTXO)\n      replyToId: $items[0].json.id         // 第一条 tweet id (Top Rank)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        -16
+      ],
+      "id": "b281a544-c506-472a-947f-3edcc1bfb43d",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "text": "={{$json[\"text\"]}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        -176
+      ],
+      "id": "cfa26df0-1b1c-409c-9001-5b47c74c0c8b",
+      "name": "Create Tweet",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "QdAkpuhCZiVLrFmj",
+          "name": "X account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "inReplyToStatusId": {
+            "__rl": true,
+            "value": "={{ $json.replyToId }}",
+            "mode": "id"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        368,
+        -16
+      ],
+      "id": "1aeb5ceb-1d04-43d8-a617-ef323b33356b",
+      "name": "Reply Tweet",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "QdAkpuhCZiVLrFmj",
+          "name": "X account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -185,28 +215,6 @@
         ]
       ]
     },
-    "Format Top Rank": {
-      "main": [
-        [
-          {
-            "node": "Create Tweet (Top Rank)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Create Tweet (Top Rank)": {
-      "main": [
-        [
-          {
-            "node": "Create Tweet (Reply Latest UTXO)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Get latest utxo": {
       "main": [
         [
@@ -233,11 +241,60 @@
       "main": [
         [
           {
-            "node": "Create Tweet (Reply Latest UTXO)",
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Format Top Rank": {
+      "main": [
+        [
+          {
+            "node": "Create Tweet",
             "type": "main",
             "index": 0
           }
         ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Reply Tweet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Tweet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply Tweet": {
+      "main": [
+        []
       ]
     }
   },
@@ -245,7 +302,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a96307eb-11a4-4dda-b59e-2f02b005046d",
+  "versionId": "a8cd9435-e393-467d-b47f-318feeb39e4e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d6be6db053bc793431c40352dfe5f969f52f0df6fd00f52106a034f61307cef3"
