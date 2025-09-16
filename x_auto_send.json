@@ -5,19 +5,17 @@
       "parameters": {
         "rule": {
           "interval": [
-            {
-              "field": "hours"
-            }
+            {}
           ]
         }
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -1184,
-        -96
+        -16,
+        320
       ],
-      "id": "67572171-9ba2-4df8-8b87-b0ffe5deacd8",
+      "id": "0c8aee41-806e-4b4e-a274-77fa70d08ee6",
       "name": "Schedule Trigger"
     },
     {
@@ -27,81 +25,13 @@
           "splitIntoItems": true
         }
       },
-      "id": "e3f725ee-cb9a-4967-a2d7-1f3a13d44d8d",
+      "id": "f35a33a8-0e65-4267-99d8-f4d4b54179a1",
       "name": "Get latest utxo",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        -784,
-        32
-      ]
-    },
-    {
-      "parameters": {
-        "maxItems": 10
-      },
-      "type": "n8n-nodes-base.limit",
-      "typeVersion": 1,
-      "position": [
-        -560,
-        32
-      ],
-      "id": "6caf03f5-162d-460f-8c6e-07c48c1aafb4",
-      "name": "Limit UTXO"
-    },
-    {
-      "parameters": {
-        "functionCode": "const inputArray = items[0].json.result;\nlet blockHeightLine = \"\";\nconst bhItem = inputArray.find(obj => obj.blockHeight);\nif (bhItem) {\n  blockHeightLine = `Big 5 UTXO on blockHeight: ${bhItem.blockHeight}`;\n}\nconst addrItems = inputArray.filter(obj => !obj.blockHeight);\nconst texts = addrItems.slice(5, 10).map(obj => {\n  const key = Object.keys(obj)[0];\n  let address = key.includes(\"_\") ? key.split(\"_\")[1] : key;\n  const utxoRaw = obj[key];\n  let utxo = Math.floor(parseFloat(utxoRaw) || 0);\n  return `${address}: ${utxo}`;\n});\nfooter = `#BTC #Crypto`;\nlet tweet = [blockHeightLine, ...texts, footer].join(\"\\n\");\nif (tweet.length > 280) {\n  tweet = tweet.slice(0, 277) + \"...\";\n}\nreturn [{ json: { text: tweet } }];"
-      },
-      "id": "beedf800-64f9-43e4-8b53-daeccae30f4d",
-      "name": "Format Latest UTXO",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 1,
-      "position": [
-        -352,
-        32
-      ]
-    },
-    {
-      "parameters": {
-        "maxItems": 10
-      },
-      "type": "n8n-nodes-base.limit",
-      "typeVersion": 1,
-      "position": [
-        -560,
-        -176
-      ],
-      "id": "99a319e8-d442-45fe-82e2-f557969bcc66",
-      "name": "Limit Top"
-    },
-    {
-      "parameters": {
-        "functionCode": "const inputArray = items[0].json.result;\nheader = `Top 5 rank:`;\nfooter = `#BTC`;\nconst addrItems = inputArray.filter(obj => !obj.blockHeight);\nconst texts = addrItems.slice(0, 5).map(obj => {\n  const key = Object.keys(obj)[0];\n  let address = key.includes(\"_\") ? key.split(\"_\")[1] : key;\n  const utxoRaw = obj[key];\n  let utxo = Math.floor(parseFloat(utxoRaw) || 0);\n  return `${address}: ${utxo}`;\n});\nlet tweet = [header, ...texts, footer].join(\"\\n\");\nif (tweet.length > 280) {\n  tweet = tweet.slice(0, 277) + \"...\";\n}\nreturn [{ json: { text: tweet } }];"
-      },
-      "id": "c90e2199-0298-4ff8-be8b-80808bd960fd",
-      "name": "Format Top Rank",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 1,
-      "position": [
-        -384,
-        -176
-      ]
-    },
-    {
-      "parameters": {
-        "url": "https://53edba271760e4b58e08299442fca98930daa137-4000.dstack-prod8.phala.network/api/top-balances",
-        "options": {
-          "splitIntoItems": true
-        }
-      },
-      "id": "4756d231-7f78-4caf-b5d7-10c8d96fc1fc",
-      "name": "Get top balance",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 1,
-      "position": [
-        -784,
-        -176
+        176,
+        320
       ]
     },
     {
@@ -109,23 +39,23 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        48,
-        -16
+        864,
+        384
       ],
-      "id": "81cb277c-228c-4351-9027-5b939d66a98c",
+      "id": "b0d04bd7-22b6-4b82-9abd-04aad8d74264",
       "name": "Merge"
     },
     {
       "parameters": {
-        "jsCode": "return [\n  {\n    json: {\n      text: $items[1].json.text,           // 第二条 text (Latest UTXO)\n      replyToId: $items[0].json.id         // 第一条 tweet id (Top Rank)\n    }\n  }\n];"
+        "jsCode": "return [\n  {\n    json: {\n      text: items[1].json.text,   // 第二条 text (Latest UTXO)\n      replyToId: items[0].json.id // 第一条 tweet id (Top Rank)\n    }\n  }\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        208,
-        -16
+        1024,
+        384
       ],
-      "id": "b281a544-c506-472a-947f-3edcc1bfb43d",
+      "id": "e62163f5-6dca-43f0-9759-c307c85da36c",
       "name": "Code"
     },
     {
@@ -136,14 +66,14 @@
       "type": "n8n-nodes-base.twitter",
       "typeVersion": 2,
       "position": [
-        -192,
-        -176
+        624,
+        224
       ],
-      "id": "cfa26df0-1b1c-409c-9001-5b47c74c0c8b",
+      "id": "1e96b6f1-e3dd-405b-9a42-1c0c1eef249b",
       "name": "Create Tweet",
       "credentials": {
         "twitterOAuth2Api": {
-          "id": "QdAkpuhCZiVLrFmj",
+          "id": "6vyfuBnpvHEeK0a1",
           "name": "X account"
         }
       }
@@ -162,17 +92,43 @@
       "type": "n8n-nodes-base.twitter",
       "typeVersion": 2,
       "position": [
-        368,
-        -16
+        1168,
+        384
       ],
-      "id": "1aeb5ceb-1d04-43d8-a617-ef323b33356b",
+      "id": "f127d4ef-9a6d-4c5d-9b2a-bffd790b1dea",
       "name": "Reply Tweet",
       "credentials": {
         "twitterOAuth2Api": {
-          "id": "QdAkpuhCZiVLrFmj",
+          "id": "6vyfuBnpvHEeK0a1",
           "name": "X account"
         }
       }
+    },
+    {
+      "parameters": {
+        "functionCode": "const inputArray = items[0].json.result;\nlet blockHeightLine = \"\";\nconst bhItem = inputArray.find(obj => obj.blockHeight);\nif (bhItem) {\n  blockHeightLine = `Biggest UTXO on blockHeight:${bhItem.blockHeight}`;\n}\nconst addrItems = inputArray.filter(obj => !obj.blockHeight);\nconst texts = addrItems.slice(0, 4).map(obj => {\n  const key = Object.keys(obj)[0];\n  let address = key.includes(\"_\") ? key.split(\"_\")[1] : key;\n  const utxoRaw = obj[key];\n  let utxo = Math.floor(parseFloat(utxoRaw) || 0);\n  return `${address}: ${utxo}`;\n});\n\nfooter = `#BTC #Crypto`;\nlet tweet = [blockHeightLine, ...texts, footer].join(\"\\n\");\nif (tweet.length > 280) {\n  tweet = tweet.slice(0, 277) + \"...\";\n}\nreturn [{ json: { text: tweet } }];"
+      },
+      "id": "d31f67bd-1206-448a-a1ce-12ddb1a8a142",
+      "name": "Format first 4",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        432,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const inputArray = items[0].json.result;\nlet blockHeightLine = \"\";\nconst bhItem = inputArray.find(obj => obj.blockHeight);\nif (bhItem) {\n  blockHeightLine = `Cont.`;\n}\nconst addrItems = inputArray.filter(obj => !obj.blockHeight);\nconst texts = addrItems.slice(4, 9).map(obj => {\n  const key = Object.keys(obj)[0];\n  let address = key.includes(\"_\") ? key.split(\"_\")[1] : key;\n  const utxoRaw = obj[key];\n  let utxo = Math.floor(parseFloat(utxoRaw) || 0);\n  return `${address}: ${utxo}`;\n});\n\nfooter = `#BTC #Crypto`;\nlet tweet = [blockHeightLine, ...texts, footer].join(\"\\n\");\nif (tweet.length > 280) {\n  tweet = tweet.slice(0, 277) + \"...\";\n}\nreturn [{ json: { text: tweet } }];"
+      },
+      "id": "d95365d9-0b0f-44c3-af56-e830eed2c5cf",
+      "name": "Format next 5",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        432,
+        432
+      ]
     }
   ],
   "pinData": {},
@@ -181,34 +137,7 @@
       "main": [
         [
           {
-            "node": "Get top balance",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "Get latest utxo",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get top balance": {
-      "main": [
-        [
-          {
-            "node": "Limit Top",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Limit Top": {
-      "main": [
-        [
-          {
-            "node": "Format Top Rank",
             "type": "main",
             "index": 0
           }
@@ -219,40 +148,12 @@
       "main": [
         [
           {
-            "node": "Limit UTXO",
+            "node": "Format first 4",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Limit UTXO": {
-      "main": [
-        [
+          },
           {
-            "node": "Format Latest UTXO",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format Latest UTXO": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Format Top Rank": {
-      "main": [
-        [
-          {
-            "node": "Create Tweet",
+            "node": "Format next 5",
             "type": "main",
             "index": 0
           }
@@ -292,9 +193,26 @@
         ]
       ]
     },
-    "Reply Tweet": {
+    "Format first 4": {
       "main": [
-        []
+        [
+          {
+            "node": "Create Tweet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format next 5": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
       ]
     }
   },
@@ -302,11 +220,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a8cd9435-e393-467d-b47f-318feeb39e4e",
+  "versionId": "3ec3bfa1-6504-4cc0-9a5d-1666e4a3fbfe",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "d6be6db053bc793431c40352dfe5f969f52f0df6fd00f52106a034f61307cef3"
+    "instanceId": "35768917b16b26ddc6f41219d8759262ca1456801f9a9e5fd2947cbb504096df"
   },
-  "id": "FlxCMi76DboyNDRE",
+  "id": "o10cBCGwvN6B07j4",
   "tags": []
 }
